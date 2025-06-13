@@ -32,14 +32,7 @@ AI-powered thesis proofreading API with OpenAI integration.
    ```
 
 3. **Set up OpenAI API key**
-   
-   Option A - Environment Variables (Recommended):
-   ```bash
-   # Create .env file
-   echo "OPENAI_API_KEY=your_actual_openai_api_key_here" > .env
-   ```
-   
-   Option B - Configuration file:
+    Configuration file:
    ```bash
    cp config.example.js config.js
    # Edit config.js with your API key

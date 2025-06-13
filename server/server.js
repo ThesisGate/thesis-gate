@@ -3,12 +3,13 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import multer from 'multer';
-// import pdfParse from 'pdf-parse'; // disabled
+import pdfParse from 'pdf-parse';
 import { OpenAI } from 'openai';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { config } from './config.js';
 
 // Load environment variables
 dotenv.config();
@@ -18,11 +19,10 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Environment variables (with defaults for demo)
-const PORT = process.env.PORT || 3001;
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY || 'your_openai_api_key_here';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
-const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024; // 10MB
+const PORT = config.PORT;
+const OPENAI_API_KEY = config.OPENAI_API_KEY;
+const FRONTEND_URL = config.FRONTEND_URL;
+const MAX_FILE_SIZE = config.MAX_FILE_SIZE;
 
 // Initialize OpenAI
 const openai = new OpenAI({
@@ -65,7 +65,7 @@ function chunkText(text, maxChunkSize = 3000) {
   const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
   const chunks = [];
   let currentChunk = '';
-  
+
   for (const sentence of sentences) {
     if ((currentChunk + sentence).length > maxChunkSize) {
       if (currentChunk) {
@@ -80,11 +80,11 @@ function chunkText(text, maxChunkSize = 3000) {
       currentChunk += sentence + '.';
     }
   }
-  
+
   if (currentChunk) {
     chunks.push(currentChunk.trim());
   }
-  
+
   return chunks;
 }
 
@@ -92,11 +92,11 @@ function chunkText(text, maxChunkSize = 3000) {
 async function analyzeWithOpenAI(text, analysisType = 'comprehensive') {
   const prompts = {
     grammar: `Please analyze the following academic text for grammar, punctuation, and syntax errors. Provide specific corrections and explanations:\n\n${text}`,
-    
+
     structure: `Please analyze the following academic text for structural issues, flow, coherence, and logical organization. Provide specific suggestions for improvement:\n\n${text}`,
-    
+
     clarity: `Please analyze the following academic text for clarity, readability, and academic writing style. Suggest improvements for better communication:\n\n${text}`,
-    
+
     comprehensive: `As an expert academic editor, please provide a comprehensive analysis of the following thesis text. Focus on:
 
 1. Grammar, punctuation, and syntax errors
@@ -139,8 +139,8 @@ ${text}`
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     service: 'ThesisGate Backend'
   });
@@ -155,26 +155,11 @@ app.post('/api/upload-thesis', upload.single('thesis'), async (req, res) => {
 
     console.log('Processing PDF upload:', req.file.originalname);
 
-    // Save PDF temporarily for processing
-    const tempFilePath = path.join(__dirname, 'uploads', `temp_${Date.now()}_${req.file.originalname}`);
-    await fs.writeFile(tempFilePath, req.file.buffer);
+    // Use pdf-parse directly on buffer
+    const extractedData = await pdfParse(req.file.buffer);
 
-    // Mock PDF processing - text extraction disabled for testing
-    const extractedData = await new Promise((resolve, reject) => {
-      // pdfExtract(tempFilePath, { type: 'text' }, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
-
-    // Clean up temporary file
-    await fs.unlink(tempFilePath);
-
-    const extractedText = extractedData.text_pages.join(' ');
-    const pageCount = extractedData.text_pages.length;
+    const extractedText = extractedData.text;
+    const pageCount = extractedData.numpages;
 
     if (!extractedText || extractedText.trim().length < 100) {
       return res.status(400).json({ 
@@ -262,12 +247,12 @@ ${chunkAnalyses.map((analysis, i) => `Section ${i + 1}:\n${analysis}`).join('\n\
     if (error.message.includes('OpenAI')) {
       res.status(503).json({ 
         error: 'AI analysis service temporarily unavailable. Please try again later.',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        details: config.NODE_ENV === 'development' ? error.message : undefined
       });
     } else {
-      res.status(500).json({ 
+      res.status(500).json({
         error: 'Failed to process thesis. Please try again.',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        details: config.NODE_ENV === 'development' ? error.message : undefined
       });
     }
   }
@@ -277,13 +262,13 @@ ${chunkAnalyses.map((analysis, i) => `Section ${i + 1}:\n${analysis}`).join('\n\
 app.post('/api/quick-analysis', async (req, res) => {
   try {
     const { text, analysisType = 'comprehensive' } = req.body;
-    
+
     if (!text || text.trim().length < 50) {
       return res.status(400).json({ error: 'Text too short for analysis (minimum 50 characters)' });
     }
 
     const analysis = await analyzeWithOpenAI(text.slice(0, 2000), analysisType); // Limit to 2000 chars for quick analysis
-    
+
     res.json({
       success: true,
       analysis,
@@ -293,9 +278,9 @@ app.post('/api/quick-analysis', async (req, res) => {
 
   } catch (error) {
     console.error('Error in quick analysis:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Analysis failed',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: config.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
