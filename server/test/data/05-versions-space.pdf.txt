@@ -1,0 +1,91 @@
+
+
+ 
+ 
+Quick Start (Executive Summary) 
+1. What is ThesisGate? A University of Calgary–backed AI platform under Prof. Bin Hu 
+(Head of Clinical Neurosciences) that automates detailed thesis review for Master’s, 
+PhD, and Honors undergrads—replacing costly expert proofreading with an AI agent 
+pipeline. 
+2. Why it matters: Students typically pay $100s/hr for experienced PhDs to critique their 
+work. ThesisGate delivers comparable depth at a fraction of the cost and turnaround. 
+3. How it works, at a glance: 
+○ Upload thesis (PDF/DOCX) → chain of specialized AI agents each review 
+structure, methodology, citations, and accuracy → multi-stage verification → 
+consolidated feedback report. 
+4. Who pays & how: 
+○ Individual users: One‑flat fee per submission. 
+○ Institutional license: University‑wide subscription via Dr. Hu’s department. 
+5. Key partnerships: 
+○ Prof. Bin Hu (Dept. Head, Clinical Neurosciences, UCalgary). 
+○ Society for AI Literacy (SAIL) assisting with outreach, advertising, and AI 
+deployment. 
+ 
+1. Background & Context 
+Professor Bin Hu leads the Department of Clinical Neurosciences at the Cumming School of 
+Medicine, University of Calgary. With decades of research in neurolinguistics and clinical AI, Dr. 
+Hu secures both academic credibility and institutional buy‑in. His office sponsors ThesisGate, 
+guaranteeing initial uptake by UCalgary departments (akin to the campus‑wide scite 
+subscription). 
+ThesisGate addresses the costly and time‑intensive process of manual thesis review: 
+professional academics (often PhDs) charge high hourly rates and have limited bandwidth. Our 
+AI‐driven pipeline replaces or supplements this by automating deep-dive critiques. 
+Society for AI Literacy (SAIL) partners on marketing, educational workshops, and eventual 
+co‑development of the custom AI prompt framework. UCalgary’s enthusiasm for student‑led AI 
+projects opens doors for funding and exposure. 
+ 
+2. Platform Overview 
+
+ 
+1. User Flow: 
+○ Sign up / log in (university SSO or email). 
+○ Upload thesis draft (PDF/DOCX). 
+○ Select service type (individual vs. institutional license). 
+○ System validates file & extracts structure. 
+○ AI Agent Pipeline executes: 
+■ Agent 1: Structure & formatting check. 
+■ Agent 2: Methodology & experiment design review. 
+■ Agent 3: Citation and literature‐gap analysis. 
+■ Agent 4: Data consistency & statistical accuracy. 
+■ Agent 5: Language, grammar, and clarity pass. 
+○ Multi‑stage verification merges agent outputs, flags conflicts, and escalates 
+uncertain sections for human audit. 
+○ Receive consolidated feedback report (HTML + PDF) within 24–48 hours. 
+2. Key Features: 
+○ Automated metadata extraction (title, abstract, chapters). 
+○ Custom prompt engine version‑controlled by SAIL & Dr. Hu’s lab. 
+○ Revision tracking: compare versions & highlight progress. 
+○ Institutional admin dashboard: license‑key usage, departmental analytics. 
+○ User rating system to refine AI prompts continuously. 
+3. Technical Highlights: 
+○ LLM Core: OpenAI GPT‑o3 reasoning model. 
+○ Microservices: Upload, Processing (queue & AI calls), Billing, Reporting. 
+○ Storage: Encrypted S3 buckets for submissions & reports. 
+○ Integrations: Stripe for payments; SAML/OAuth for SSO; PostgreSQL & 
+MongoDB for data. 
+ 
+3. Intern Roles & Responsibilities 
+As a ThesisGate intern, you will: 
+● Learn the end‑to‑end PRD and platform architecture. 
+● Assist SAIL in crafting marketing materials (campus posters, social posts). 
+● Map and test AI agent prompts; log edge‑case failures. 
+● Support file‑processing QA: verify metadata extraction, formatting. 
+● Collect user‑feedback data and help analyze prompt performance. 
+● Attend weekly sync with Dr. Hu’s lab and SAIL for progress updates. 
+Required tools & access: 
+● Developer sandbox account (credentials provided by IT). 
+● SAIL’s Google Drive folder (marketing assets, prompt docs). 
+
+ 
+● Access to campus SSO testing environment. 
+ 
+4. PRD Summary (Key Sections)** 
+● Objectives: High‑quality, consistent feedback; single‑tier pricing for clarity; institutional 
+adoption. 
+● User Personas: Graduate students, writing‑center admins, thesis advisors. 
+● Functional Requirements: Account management; file upload/validation; AI feedback 
+pipeline; billing/licensing; reporting & analytics; support. 
+● Non‑Functional Requirements: 99.9% uptime, TLS/AES‑256 security, GDPR/PIPEDA 
+compliance, SOC 2 readiness. 
+ 
+ 
